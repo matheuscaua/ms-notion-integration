@@ -3,6 +3,7 @@ package com.ms.productivity.controlles;
 import com.ms.productivity.clients.NotionClient;
 import com.ms.productivity.dtos.NotionDatabaseDTO;
 import com.ms.productivity.dtos.NotionItemDTO;
+import com.ms.productivity.enums.NotionItemPriorityEnum;
 import com.ms.productivity.enums.ParameterDescriptionEnum;
 import com.ms.productivity.models.Parameter;
 import com.ms.productivity.services.ParameterService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Controller
@@ -26,6 +28,7 @@ public class NotionDatabaseJobController {
     public void execute(){
         NotionDatabaseDTO notionDatabase = findNotionDatabase();
         notionItemsCompleted(notionDatabase).forEach(i -> System.out.println(i.toString()));
+        System.out.println(calculateProductivity(notionDatabase.getItems()).toString());
     }
 
     public Parameter findBaseUrlNotion(){
@@ -47,15 +50,28 @@ public class NotionDatabaseJobController {
         return completedItems;
     }
 
-    public Map<Long, Long> calculateProductivity(List<NotionItemDTO> notionItemsCompleted){
-        var qtdItemsCompleted = notionItemsCompleted.size();
+    public Integer calculateProductivity(List<NotionItemDTO> notionItemsCompleted){
+        var qtdCompletedItems = notionItemsCompleted.size();
+        AtomicInteger qtdUrgentItems = new AtomicInteger();
+        AtomicInteger qtdImportantItems = new AtomicInteger();
+        AtomicInteger qtdUnhurriedItems = new AtomicInteger();
         notionItemsCompleted.stream().forEach(i -> {
             String priority = i.getProperties().getPrioridade().getSelect().getName();
-            if (priority.equals())
+            if (priority.toUpperCase().equals(NotionItemPriorityEnum.URGENTE)) qtdUrgentItems.getAndIncrement();
+            if (priority.toUpperCase().equals(NotionItemPriorityEnum.IMPORTANTE)) qtdImportantItems.getAndIncrement();
+            if (priority.toUpperCase().equals(NotionItemPriorityEnum.SEM_PRESSA)) qtdUnhurriedItems.getAndIncrement();
         });
 
+        Integer totalPoints = (qtdUrgentItems.get() * NotionItemPriorityEnum.URGENTE.getWeightEnum())
+                + (qtdImportantItems.get() * NotionItemPriorityEnum.IMPORTANTE.getWeightEnum())
+                + (qtdUnhurriedItems.get() * NotionItemPriorityEnum.SEM_PRESSA.getWeightEnum());
 
+        Integer productivity = totalPoints / qtdCompletedItems;
+
+        return productivity;
     }
+
+
 
 
 

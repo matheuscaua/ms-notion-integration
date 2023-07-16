@@ -12,7 +12,7 @@ public class NotionPropertiesItemDTO {
     private FeitoDTO feito;
     @JsonProperty("Name")
     private NameDTO name;
-    @JsonProperty("prioridade")
+    @JsonProperty("Prioridade")
     private PrioridadeDTO prioridade;
 
     @Data
