@@ -28,19 +28,14 @@ public class NotionClient {
     @Autowired
     private UtilsServiceImpl utilsService;
 
-    public NotionDatabaseDTO getNotionDatabase(){
-        String urlList = utilsService.createUrlGetAllListsOnABoard(BASE_URL);
+    public NotionDatabaseDTO getNotionDatabase(String baseUrl, Map<String, String> headers){
+        String url = utilsService.createUrlGetNotionDatabase(baseUrl);
 
-        Map<String, String> valueHeaders = new HashMap<>();
-        valueHeaders.put("Authorization", "Bearer secret_VxyOZPpQQaPAkCuXIoVv2VXNMVMvc6Y5SWy3asFbizb");
-        valueHeaders.put("Notion-Version", "2022-06-28");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAll(valueHeaders);
-        HttpEntity<NotionDatabaseDTO> httpEntity = new HttpEntity<>(headers);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<NotionDatabaseDTO> httpEntity = new HttpEntity<>(httpHeaders);
         ParameterizedTypeReference<NotionDatabaseDTO> responseType = new ParameterizedTypeReference<NotionDatabaseDTO>() {};
-
-        ResponseEntity<NotionDatabaseDTO> response = restTemplate.exchange(urlList, HttpMethod.POST, httpEntity, responseType);
+        ResponseEntity<NotionDatabaseDTO> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, responseType);
 
         return response.getBody();
     }
