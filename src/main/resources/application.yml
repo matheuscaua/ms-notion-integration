@@ -21,4 +21,4 @@ spring:
 trello:
   api:
     base:
-      url: 'https://api.trello.com/1'
+      url: 'https://api.notion.com/v1'
