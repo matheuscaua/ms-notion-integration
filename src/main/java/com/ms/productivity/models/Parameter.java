@@ -9,13 +9,13 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "PARAMETER")
+@Table(name = "TBPARAMETER")
 public class Parameter implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "DESCRIPTION")
     @Enumerated(EnumType.STRING)
     private ParameterDescriptionEnum description;
 

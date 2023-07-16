@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class NotionDatabaseJobController {
@@ -22,7 +23,7 @@ public class NotionDatabaseJobController {
     private ParameterService parameterService;
 
     public void execute(){
-
+        System.out.println(findNotionDatabase().toString());
     }
 
     public Parameter findBaseUrlNotion(){
@@ -34,7 +35,8 @@ public class NotionDatabaseJobController {
     public NotionDatabaseDTO findNotionDatabase (){
         Parameter urlBaseNotion = findBaseUrlNotion();
         Parameter headersNotion = findHeaderNotion();
-        return notionClient.getNotionDatabase(headersNotion.getValue(),urlBaseNotion.getValue());
+        Map<String, String> headers = parameterService.extractNotionHeaders(headersNotion);
+        return notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
     }
 
 
