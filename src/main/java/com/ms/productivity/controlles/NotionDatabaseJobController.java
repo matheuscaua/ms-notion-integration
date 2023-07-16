@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class NotionDatabaseJobController {
@@ -23,7 +24,8 @@ public class NotionDatabaseJobController {
     private ParameterService parameterService;
 
     public void execute(){
-        System.out.println(findNotionDatabase().toString());
+        NotionDatabaseDTO notionDatabase = findNotionDatabase();
+        notionItemsCompleted(notionDatabase).forEach(i -> System.out.println(i.toString()));
     }
 
     public Parameter findBaseUrlNotion(){
@@ -37,6 +39,13 @@ public class NotionDatabaseJobController {
         Parameter headersNotion = findHeaderNotion();
         Map<String, String> headers = parameterService.extractNotionHeaders(headersNotion);
         return notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
+    }
+
+    public List<NotionItemDTO> notionItemsCompleted(NotionDatabaseDTO notionDatabase){
+        List<NotionItemDTO> items = notionDatabase.getItems();
+        List<NotionItemDTO> completedItems = items.stream().filter(i ->
+                i.getProperties().getFeito().getCheckbox().equals(true)).collect(Collectors.toList());
+        return completedItems;
     }
 
 
