@@ -42,12 +42,20 @@ public class NotionDatabaseJobController {
     }
 
     public List<NotionItemDTO> notionItemsCompleted(NotionDatabaseDTO notionDatabase){
-        List<NotionItemDTO> items = notionDatabase.getItems();
-        List<NotionItemDTO> completedItems = items.stream().filter(i ->
+        List<NotionItemDTO> completedItems = notionDatabase.getItems().stream().filter(i ->
                 i.getProperties().getFeito().getCheckbox().equals(true)).collect(Collectors.toList());
         return completedItems;
     }
 
+    public Map<Long, Long> calculateProductivity(List<NotionItemDTO> notionItemsCompleted){
+        var qtdItemsCompleted = notionItemsCompleted.size();
+        notionItemsCompleted.stream().forEach(i -> {
+            String priority = i.getProperties().getPrioridade().getSelect().getName();
+            if (priority.equals())
+        });
+
+
+    }
 
 
 

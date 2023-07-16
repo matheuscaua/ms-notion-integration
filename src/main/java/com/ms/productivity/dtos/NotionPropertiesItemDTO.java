@@ -12,6 +12,8 @@ public class NotionPropertiesItemDTO {
     private FeitoDTO feito;
     @JsonProperty("Name")
     private NameDTO name;
+    @JsonProperty("prioridade")
+    private PrioridadeDTO prioridade;
 
     @Data
     public static class FeitoDTO{
@@ -43,5 +45,18 @@ public class NotionPropertiesItemDTO {
         private String content;
         @JsonProperty("link")
         private String link;
+    }
+
+    @Data
+    public static class PrioridadeDTO{
+        private String id;
+        @JsonProperty("select")
+        private SelectDTO select;
+    }
+    @Data
+    public static class SelectDTO{
+        private String id;
+        @JsonProperty("name")
+        private String name;
     }
 }
