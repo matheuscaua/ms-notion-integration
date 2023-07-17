@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,7 +31,10 @@ public class NotionDatabaseJobController {
 
     @Autowired
     private ProductivityServiceImpl productivityService;
-
+     /*
+     * Essa classe realiza o cálculo para a produtividade
+     *
+     * */
     public void execute(){
         NotionDatabaseDTO notionDatabase = findNotionDatabase();
         List<NotionItemDTO> notionItemsCompleted = notionItemsCompleted(notionDatabase);
