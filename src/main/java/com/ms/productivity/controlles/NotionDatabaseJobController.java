@@ -9,15 +9,12 @@ import com.ms.productivity.models.Parameter;
 import com.ms.productivity.models.Productivity;
 import com.ms.productivity.services.ParameterService;
 import com.ms.productivity.services.impl.ProductivityServiceImpl;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Controller;
+import org.springframework.web.client.HttpStatusCodeException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -31,23 +28,35 @@ public class NotionDatabaseJobController {
 
     @Autowired
     private ProductivityServiceImpl productivityService;
-     /*
+     /* *
      * Essa classe realiza o cálculo para a produtividade
-     *
      * */
     public void execute(){
+        Map<String, Integer> valueProductivity;
+        Productivity productivity;
         NotionDatabaseDTO notionDatabase = findNotionDatabase();
-        List<NotionItemDTO> notionItemsCompleted = notionItemsCompleted(notionDatabase);
-        Integer valueProductivity = calculateProductivity(notionItemsCompleted);
-        Productivity productivity = productivityService.createProductivityModel(valueProductivity);
-        productivityService.save(productivity);
+        List<NotionItemDTO> items = notionDatabase.getItems();
+        if(notionDatabase != null) {
+            List<NotionItemDTO> completedItems = notionItemsCompleted(notionDatabase);
+            valueProductivity = calculateProductivity(completedItems, items);
+            productivity = productivityService.createProductivityModel(valueProductivity, completedItems.size(), items.size());
+            productivityService.save(productivity);
+        }
     }
 
     public NotionDatabaseDTO findNotionDatabase(){
-        Parameter urlBaseNotion = findBaseUrlNotion();
-        Parameter headersNotion = findHeaderNotion();
-        Map<String, String> headers = parameterService.extractNotionHeaders(headersNotion);
-        return notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
+         Parameter urlBaseNotion = findBaseUrlNotion();
+         Parameter headersNotion = findHeaderNotion();
+         Map<String, String> headers = parameterService.extractNotionHeaders(headersNotion);
+         if(headers != null && !headers.isEmpty()) {
+             try{
+                 NotionDatabaseDTO notionDatabase = notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
+                 return notionDatabase;
+             }catch (HttpStatusCodeException e){
+                 System.out.println(e.getMessage());
+             }
+         }
+         return null;
     }
 
     public List<NotionItemDTO> notionItemsCompleted(NotionDatabaseDTO notionDatabase){
@@ -55,30 +64,37 @@ public class NotionDatabaseJobController {
                 i.getProperties().getFeito().getCheckbox().equals(true)).collect(Collectors.toList());
         return completedItems;
     }
-    public Integer calculateProductivity(List<NotionItemDTO> notionItemsCompleted) {
-        var items = extractPriorityItems(notionItemsCompleted);
-        Integer totalPoints = (items.get(1) * NotionItemPriorityEnum.URGENTE.getWeightEnum())
-                + (items.get(2) * NotionItemPriorityEnum.IMPORTANTE.getWeightEnum())
-                + (items.get(3) * NotionItemPriorityEnum.SEM_PRESSA.getWeightEnum());
-
-        Integer productivity = totalPoints / items.get(0);
-
-        return productivity;
+    public Map<String, Integer> calculateProductivity(List<NotionItemDTO> notionItemsCompleted, List<NotionItemDTO> notionItems) {
+        Map<String, Integer> points = new HashMap<>();
+        var priorityItemsCompleted = extractPriorityItems(notionItemsCompleted);
+        var priorityTotalItems = extractPriorityItems(notionItems);
+        var pointsTotalItems = extractPointsItems(priorityTotalItems);
+        var pointsCompletedItems = extractPointsItems(priorityItemsCompleted);
+        points.put("Total Items", pointsTotalItems);
+        points.put("Completed Items", pointsCompletedItems);
+        return points;
+    }
+    public Integer extractPointsItems(List<Integer> priorityItems){
+        return  (priorityItems.get(0) * NotionItemPriorityEnum.URGENTE.getWeightEnum())
+                + (priorityItems.get(1) * NotionItemPriorityEnum.IMPORTANTE.getWeightEnum())
+                + (priorityItems.get(2) * NotionItemPriorityEnum.SEM_PRESSA.getWeightEnum());
     }
 
     public List<Integer> extractPriorityItems(List<NotionItemDTO> notionItemsCompleted){
-        var qtdCompletedItems = notionItemsCompleted.size();
         Integer qtdUrgentItems = 0;
         Integer qtdImportantItems = 0;
         Integer qtdUnhurriedItems = 0;
         for (NotionItemDTO item: notionItemsCompleted) {
             String priority = item.getProperties().getPrioridade().getSelect().getName();
-            if (priority.toUpperCase().equals(NotionItemPriorityEnum.URGENTE.toString())) qtdUrgentItems += 1;
-            if (priority.toUpperCase().equals(NotionItemPriorityEnum.IMPORTANTE.toString())) qtdImportantItems += 1;
-            if (priority.toUpperCase().equals(NotionItemPriorityEnum.SEM_PRESSA.toString())) qtdUnhurriedItems += 1;
+            if(priority == null ||priority.isEmpty()) System.out.printf("The item {}, dont priority", item.getId());
+            else {
+                if (priority.toUpperCase().equals(NotionItemPriorityEnum.URGENTE.toString())) qtdUrgentItems += 1;
+                if (priority.toUpperCase().equals(NotionItemPriorityEnum.IMPORTANTE.toString())) qtdImportantItems += 1;
+                if (priority.toUpperCase().equals(NotionItemPriorityEnum.SEM_PRESSA.toString())) qtdUnhurriedItems += 1;
+            }
         }
-        List<Integer> qtdItems = Arrays.asList(qtdCompletedItems,qtdUrgentItems,qtdImportantItems,qtdUnhurriedItems);
-        return qtdItems;
+        List<Integer> qtdPriorityItems = Arrays.asList(qtdUrgentItems,qtdImportantItems,qtdUnhurriedItems);
+        return qtdPriorityItems;
     }
 
     public Parameter findBaseUrlNotion(){

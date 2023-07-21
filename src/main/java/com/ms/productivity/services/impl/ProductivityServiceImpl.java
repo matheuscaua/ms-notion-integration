@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 public class ProductivityServiceImpl {
@@ -17,9 +18,12 @@ public class ProductivityServiceImpl {
         repository.save(productivity);
     }
 
-    public Productivity createProductivityModel(Integer valueProductivity) {
+    public Productivity createProductivityModel(Map<String, Integer> points, Integer completedItems, Integer totalItems) {
         Productivity productivity = new Productivity();
-        productivity.setProductivity(valueProductivity);
+        productivity.setProductivity(points.get("Completed Items"));
+        productivity.setTotal(points.get("Total Items"));
+        productivity.setCompletedItems(completedItems);
+        productivity.setTotalItems(totalItems);
         productivity.setSaveDate(LocalDateTime.now());
         return productivity;
     }
