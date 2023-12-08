@@ -5,7 +5,7 @@ public enum NotionItemPriorityEnum {
     IMPORTANTE(2),
     SEM_PRESSA(1);
 
-    Integer weight;
+    final Integer weight;
     NotionItemPriorityEnum(Integer weight) {
         this.weight = weight;
     }

@@ -1,6 +1,6 @@
 package com.ms.productivity.clients;
 
-import com.ms.productivity.dtos.NotionDatabaseDTO;
+import com.ms.productivity.dtos.notion.NotionDatabaseDTO;
 import com.ms.productivity.services.UtilsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -25,7 +25,8 @@ public class NotionClient {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAll(headers);
         HttpEntity<NotionDatabaseDTO> httpEntity = new HttpEntity<>(httpHeaders);
-        ParameterizedTypeReference<NotionDatabaseDTO> responseType = new ParameterizedTypeReference<NotionDatabaseDTO>() {};
+        ParameterizedTypeReference<NotionDatabaseDTO> responseType = new ParameterizedTypeReference<>() {
+        };
         ResponseEntity<NotionDatabaseDTO> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, responseType);
 
         return response.getBody();

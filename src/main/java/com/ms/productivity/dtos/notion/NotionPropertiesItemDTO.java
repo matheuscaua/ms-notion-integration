@@ -1,4 +1,4 @@
-package com.ms.productivity.dtos;
+package com.ms.productivity.dtos.notion;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
