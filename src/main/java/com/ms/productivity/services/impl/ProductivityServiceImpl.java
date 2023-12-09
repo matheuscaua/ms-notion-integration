@@ -38,6 +38,7 @@ public class ProductivityServiceImpl {
     public ProductivityResponseDTO calculate(){
         Map<String, Integer> valueProductivity;
         Productivity productivity = new Productivity();
+
         NotionDatabaseDTO notionDatabase = findNotionDatabase();
 
         if(notionDatabase != null) {
@@ -47,22 +48,16 @@ public class ProductivityServiceImpl {
 
             productivity = createProductivityModel(productivity,
                     valueProductivity, completedItems.size(), allItems.size());
-
             save(productivity);
             return successProductivityResponseDTO();
-            //Enviar informações para criar gráfico de produtividade //Criar microserviço...
         }return errorProductivityResponseDTO();
     }
     public NotionDatabaseDTO findNotionDatabase(){
         Parameter urlBaseNotion = findBaseUrlNotion();
         Parameter headersNotion = findHeaderNotion();
         Map<String, String> headers = parameterService.extractNotionHeaders(headersNotion);
-        if(headers != null && !headers.isEmpty()) {
-            try{
-                return notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
-            }catch (HttpStatusCodeException e){
-                System.out.println(e.getMessage());
-            }
+        if(!headers.isEmpty()) {
+           return notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
         }
         return null;
     }

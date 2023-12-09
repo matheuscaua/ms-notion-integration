@@ -7,7 +7,7 @@ public class UtilsServiceImpl {
 
 
     public String createUrlGetNotionDatabase(String urlBase){
-        return urlBase.concat("/v1/databases/e73f9628d0b047fb8a6225cfaf31ba17/query");
+        return urlBase.concat("v1/databases/e73f9628d0b047fb8a6225cfaf31ba17/query");
     }
 
 }

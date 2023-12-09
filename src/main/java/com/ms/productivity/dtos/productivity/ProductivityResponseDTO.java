@@ -12,5 +12,6 @@ public class ProductivityResponseDTO {
 
     private HttpStatus httpStatus;
     private int code;
+    private Object data;
 
 }
