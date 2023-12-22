@@ -1,7 +1,7 @@
 package com.ms.productivity.clients;
 
 import com.ms.productivity.dtos.notion.NotionDatabaseDTO;
-import com.ms.productivity.services.UtilsServiceImpl;
+import com.ms.productivity.services.impl.UtilsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;

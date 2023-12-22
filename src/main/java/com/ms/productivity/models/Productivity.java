@@ -19,14 +19,23 @@ public class Productivity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(name = "YSAVEDATE",nullable = false)
+
+    @Column(name = "SAVEDATE",nullable = false)
     private LocalDateTime saveDate;
+
     @Column(name = "XVALPRODUCTIVITY")
     private Integer productivity;
+
     @Column(name = "TOTALPOINTS")
     private Integer total;
+
     @Column(name = "TOTALITEMS")
     private Integer totalItems;
+
     @Column(name = "COMPLETEDITEMS")
     private Integer completedItems;
+
+    private String integrationName;
+
+    private String notionDatabase;
 }
