@@ -1,4 +1,4 @@
-package com.ms.productivity.models;
+package com.ms.productivity.models.productivity;
 
 
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "TBPRODUCTIVITY")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Productivity {
+public class NotionDatabaseProductivity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;

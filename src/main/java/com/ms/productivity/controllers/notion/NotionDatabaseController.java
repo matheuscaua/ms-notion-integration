@@ -1,7 +1,7 @@
 package com.ms.productivity.controllers.notion;
 
 import com.ms.productivity.dtos.productivity.ProductivityResponseDTO;
-import com.ms.productivity.services.impl.ProductivityServiceImpl;
+import com.ms.productivity.services.impl.NotionProductivityServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class NotionDatabaseController {
 
-    private final ProductivityServiceImpl productivityService;
+    private final NotionProductivityServiceImpl productivityService;
 
     @GetMapping("/calculate")
     public ResponseEntity<ProductivityResponseDTO> calculateProductivity(){

@@ -7,15 +7,14 @@ import com.ms.productivity.dtos.productivity.ProductivityResponseDTO;
 import com.ms.productivity.enums.NotionItemPriorityEnum;
 import com.ms.productivity.enums.ParameterDescriptionEnum;
 import com.ms.productivity.models.Parameter;
-import com.ms.productivity.models.Productivity;
+import com.ms.productivity.models.productivity.NotionDatabaseProductivity;
 import com.ms.productivity.repositories.ProductivityRepository;
 import com.ms.productivity.services.ParameterService;
 import io.micrometer.common.util.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -26,18 +25,20 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ProductivityServiceImpl {
+@AllArgsConstructor
+public class NotionProductivityServiceImpl {
 
-    @Autowired
-    private ProductivityRepository repository;
-    @Autowired
-    private NotionClient notionClient;
-    @Autowired
-    private ParameterService parameterService;
+    private final ProductivityRepository repository;
+
+    private final NotionClient notionClient;
+
+    private final ParameterService parameterService;
+
+    private final KafkaTemplateService kafkaTemplateService;
 
     public ProductivityResponseDTO calculate(){
         Map<String, Integer> valueProductivity;
-        Productivity productivity = new Productivity();
+        NotionDatabaseProductivity productivity = new NotionDatabaseProductivity();
 
         NotionDatabaseDTO notionDatabase = findNotionDatabase();
 
@@ -49,6 +50,7 @@ public class ProductivityServiceImpl {
             productivity = createProductivityModel(productivity,
                     valueProductivity, completedItems.size(), allItems.size());
             save(productivity);
+           // kafkaTemplateService.
             return successProductivityResponseDTO();
         }return errorProductivityResponseDTO();
     }
@@ -62,10 +64,10 @@ public class ProductivityServiceImpl {
         return null;
     }
 
-    public Productivity createProductivityModel(Productivity productivity,
-                                                Map<String, Integer> points,
-                                                Integer completedItems,
-                                                Integer totalItems) {
+    public NotionDatabaseProductivity createProductivityModel(NotionDatabaseProductivity productivity,
+                                                              Map<String, Integer> points,
+                                                              Integer completedItems,
+                                                              Integer totalItems) {
         productivity.setProductivity(points.get("Completed Items"));
         productivity.setTotal(points.get("Total Items"));
         productivity.setCompletedItems(completedItems);
@@ -134,7 +136,7 @@ public class ProductivityServiceImpl {
     public Parameter findHeaderNotion(){
         return parameterService.findParameterByDescription(ParameterDescriptionEnum.HEADERS_NOTION.toString());
     }
-    public void save(Productivity productivity){
+    public void save(NotionDatabaseProductivity productivity){
         repository.save(productivity);
     }
 }
