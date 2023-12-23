@@ -3,9 +3,7 @@ package com.ms.productivity.models.notion;
 import com.ms.productivity.enums.NotionHeadersEnum;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.io.Serializable;
-import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -16,5 +14,7 @@ public class NotionParametersIntegration implements Serializable {
     @Id
     private UUID id;
 
-    private Map<NotionHeadersEnum, String> parameters;
+    private String authorization;
+
+    private String notionVersion;
 }

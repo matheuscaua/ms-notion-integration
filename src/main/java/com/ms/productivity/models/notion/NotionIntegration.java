@@ -17,19 +17,13 @@ public class NotionIntegration implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "NAME")
     private String name;
-    @Column(name = "URI")
     private URI uri;
     private String token;
-    @Column(name = "SAVE_DATE")
     private LocalDateTime saveDate;
-    @Column(name = "LAST_UPDATE")
     private LocalDateTime lastUpdate;
-
     @OneToOne
     private NotionParametersIntegration authorizationIntegration;
-
     @OneToMany
     private List<NotionDatabaseIntegration> notionDatabaseIntegration;
 }
