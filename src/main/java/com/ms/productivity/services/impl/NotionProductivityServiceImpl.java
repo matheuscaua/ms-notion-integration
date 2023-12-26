@@ -54,6 +54,7 @@ public class NotionProductivityServiceImpl {
             return successProductivityResponseDTO();
         }return errorProductivityResponseDTO();
     }
+
     public NotionDatabaseDTO findNotionDatabase(){
         Parameter urlBaseNotion = findBaseUrlNotion();
         Parameter headersNotion = findHeaderNotion();
