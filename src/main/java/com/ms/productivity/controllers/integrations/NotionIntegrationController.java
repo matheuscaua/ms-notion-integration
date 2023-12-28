@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URISyntaxException;
+
 @RestController
 @RequestMapping("/integration")
 @AllArgsConstructor
@@ -18,10 +20,8 @@ public class NotionIntegrationController {
     private final NotionIntegrationServiceImpl notionIntegrationService;
 
     @PostMapping
-    public ResponseEntity saveIntegration(@RequestBody NotionIntegrationDTO integrationDTO){
-
+    public ResponseEntity saveIntegration(@RequestBody NotionIntegrationDTO integrationDTO) throws URISyntaxException {
         notionIntegrationService.save(integrationDTO);
-
         return new ResponseEntity(HttpStatus.OK);
     }
 }

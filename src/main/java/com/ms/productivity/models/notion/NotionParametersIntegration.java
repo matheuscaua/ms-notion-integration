@@ -17,4 +17,7 @@ public class NotionParametersIntegration implements Serializable {
     private String authorization;
 
     private String notionVersion;
+
+    @OneToOne
+    private NotionIntegration notionIntegration;
 }

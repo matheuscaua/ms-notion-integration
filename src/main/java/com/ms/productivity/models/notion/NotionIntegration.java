@@ -22,8 +22,10 @@ public class NotionIntegration implements Serializable {
     private String token;
     private LocalDateTime saveDate;
     private LocalDateTime lastUpdate;
+
     @OneToOne
-    private NotionParametersIntegration authorizationIntegration;
+    private NotionParametersIntegration notionParametersIntegration;
+    
     @OneToMany
     private List<NotionDatabaseIntegration> notionDatabaseIntegration;
 }

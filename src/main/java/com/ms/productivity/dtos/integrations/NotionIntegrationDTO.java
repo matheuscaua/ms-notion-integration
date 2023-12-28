@@ -14,8 +14,5 @@ public class NotionIntegrationDTO implements Serializable {
 
     private String name;
     private String token;
-    private URI uri;
-    
-    private NotionParametersDatabaseDTO authorizationIntegrationDTO;
-    private List<NotionDatabaseIntegrationDTO> notionDatabase;
+    private String uri;
 }
