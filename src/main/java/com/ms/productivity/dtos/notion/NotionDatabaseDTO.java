@@ -15,4 +15,6 @@ public class NotionDatabaseDTO {
 
     @JsonProperty("results")
     private List<NotionItemDTO> items;
+
+    private
 }

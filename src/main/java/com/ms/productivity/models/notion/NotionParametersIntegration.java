@@ -14,7 +14,7 @@ public class NotionParametersIntegration implements Serializable {
     @Id
     private UUID id;
 
-    private String authorization;
+    private String token;
 
     private String notionVersion;
 

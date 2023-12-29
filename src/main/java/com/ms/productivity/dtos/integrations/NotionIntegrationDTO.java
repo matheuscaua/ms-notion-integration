@@ -1,6 +1,8 @@
 package com.ms.productivity.dtos.integrations;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ms.productivity.models.notion.NotionParametersIntegration;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +15,8 @@ import java.util.List;
 public class NotionIntegrationDTO implements Serializable {
 
     private String name;
-    private String token;
     private String uri;
+
+    @JsonProperty("parameters")
+    private NotionParametersIntegrationDTO notionParametersIntegration;
 }

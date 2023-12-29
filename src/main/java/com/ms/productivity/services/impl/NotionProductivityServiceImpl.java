@@ -3,7 +3,7 @@ package com.ms.productivity.services.impl;
 import com.ms.productivity.clients.NotionClient;
 import com.ms.productivity.dtos.notion.NotionDatabaseDTO;
 import com.ms.productivity.dtos.notion.NotionItemDTO;
-import com.ms.productivity.dtos.productivity.ProductivityResponseDTO;
+import com.ms.productivity.dtos.ResponseHttpUtilsDTO;
 import com.ms.productivity.enums.NotionItemPriorityEnum;
 import com.ms.productivity.enums.ParameterDescriptionEnum;
 import com.ms.productivity.models.Parameter;
@@ -36,7 +36,7 @@ public class NotionProductivityServiceImpl {
 
     private final KafkaTemplateService kafkaTemplateService;
 
-    public ProductivityResponseDTO calculate(){
+    public ResponseHttpUtilsDTO calculate(){
         Map<String, Integer> valueProductivity;
         NotionDatabaseProductivity productivity = new NotionDatabaseProductivity();
 
@@ -118,15 +118,15 @@ public class NotionProductivityServiceImpl {
         }
         return Arrays.asList(qtdUrgentItems,qtdImportantItems,qtdUnhurriedItems);
     }
-    public ProductivityResponseDTO successProductivityResponseDTO(){
-        var productivityResponse = new ProductivityResponseDTO();
+    public ResponseHttpUtilsDTO successProductivityResponseDTO(){
+        var productivityResponse = new ResponseHttpUtilsDTO();
         productivityResponse.setCode(200);
         productivityResponse.setHttpStatus(HttpStatus.OK);
         return productivityResponse;
     }
 
-    public ProductivityResponseDTO errorProductivityResponseDTO(){
-        var productivityResponse = new ProductivityResponseDTO();
+    public ResponseHttpUtilsDTO errorProductivityResponseDTO(){
+        var productivityResponse = new ResponseHttpUtilsDTO();
         productivityResponse.setCode(404);
         productivityResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
         return productivityResponse;

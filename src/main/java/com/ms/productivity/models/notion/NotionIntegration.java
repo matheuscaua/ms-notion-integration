@@ -19,7 +19,6 @@ public class NotionIntegration implements Serializable {
 
     private String name;
     private URI uri;
-    private String token;
     private LocalDateTime saveDate;
     private LocalDateTime lastUpdate;
 

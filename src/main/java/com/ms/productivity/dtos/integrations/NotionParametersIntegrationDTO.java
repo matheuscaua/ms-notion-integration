@@ -6,12 +6,14 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Builder
-public class NotionParametersDatabaseDTO implements Serializable {
+public class NotionParametersIntegrationDTO implements Serializable {
 
-    private Map<NotionHeadersEnum, String> headers;
+    private String token;
 
+    private String notionVersion;
 
 }

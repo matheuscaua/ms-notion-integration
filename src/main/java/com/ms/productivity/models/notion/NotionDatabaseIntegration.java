@@ -15,7 +15,6 @@ public class NotionDatabaseIntegration implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "NAME_DATABASE")
     private String name;
 
     @ManyToOne

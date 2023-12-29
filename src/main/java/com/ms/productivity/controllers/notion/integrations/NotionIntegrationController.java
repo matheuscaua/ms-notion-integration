@@ -1,9 +1,9 @@
-package com.ms.productivity.controllers.integrations;
+package com.ms.productivity.controllers.notion.integrations;
 
+import com.ms.productivity.dtos.ResponseHttpUtilsDTO;
 import com.ms.productivity.dtos.integrations.NotionIntegrationDTO;
 import com.ms.productivity.services.impl.NotionIntegrationServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +20,9 @@ public class NotionIntegrationController {
     private final NotionIntegrationServiceImpl notionIntegrationService;
 
     @PostMapping
-    public ResponseEntity saveIntegration(@RequestBody NotionIntegrationDTO integrationDTO) throws URISyntaxException {
-        notionIntegrationService.save(integrationDTO);
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity<ResponseHttpUtilsDTO> saveIntegration(@RequestBody NotionIntegrationDTO integrationDTO)
+            throws URISyntaxException {
+        var response = notionIntegrationService.createNotionIntegrationModel(integrationDTO);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 }
