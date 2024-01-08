@@ -131,6 +131,7 @@ public class NotionProductivityServiceImpl {
         productivityResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
         return productivityResponse;
     }
+
     public Parameter findBaseUrlNotion(){
         return parameterService.findParameterByDescription(ParameterDescriptionEnum.URL_BASE_NOTION.toString());
     }

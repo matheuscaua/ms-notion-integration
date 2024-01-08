@@ -11,13 +11,4 @@ public class NotionDatabaseServiceImpl {
 
     private final NotionDatabaseRepository repository;
 
-    public void saveNotionDatabase(NotionDatabaseIntegrationDTO notionDatabaseIntegrationDTO){
-
-        repository.save();
-    }
-
-    private boolean isValid(NotionDatabaseIntegrationDTO integrationDTO){
-        integrationDTO.get
-    }
-
 }

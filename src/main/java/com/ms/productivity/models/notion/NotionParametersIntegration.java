@@ -1,6 +1,5 @@
 package com.ms.productivity.models.notion;
 
-import com.ms.productivity.enums.NotionHeadersEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.io.Serializable;

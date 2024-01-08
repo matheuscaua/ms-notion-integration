@@ -22,7 +22,7 @@ public class NotionIntegration implements Serializable {
     private LocalDateTime saveDate;
     private LocalDateTime lastUpdate;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private NotionParametersIntegration notionParametersIntegration;
     
     @OneToMany

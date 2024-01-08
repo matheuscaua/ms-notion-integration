@@ -21,13 +21,12 @@ public class NotionProductivityController {
 
     private final NotionProductivityServiceImpl productivityService;
 
-
-
     @GetMapping("/calculate")
     public ResponseEntity<ResponseHttpUtilsDTO> calculateProductivity(){
         var response = productivityService.calculate();
         return ResponseEntity.status(response.getHttpStatus()).body(response);
     }
+
 
 
 }

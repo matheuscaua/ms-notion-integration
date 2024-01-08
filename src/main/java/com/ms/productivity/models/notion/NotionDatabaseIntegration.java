@@ -1,9 +1,7 @@
 package com.ms.productivity.models.notion;
 
-import com.ms.productivity.dtos.integrations.NotionParametersDatabaseDTO;
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -16,6 +14,9 @@ public class NotionDatabaseIntegration implements Serializable {
     private UUID id;
 
     private String name;
+
+    @Column(name = "code")
+    private String idNotionDatabase;
 
     @ManyToOne
     private NotionIntegration notionIntegration;

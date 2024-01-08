@@ -11,7 +11,8 @@ import java.util.Map;
 @Builder
 public class NotionDatabaseIntegrationDTO implements Serializable {
 
-    private Map<NotionHeadersEnum, String> headers;
-    private String databaseName;
+    private String name;
+
+    private String idNotionDatabase;
 
 }

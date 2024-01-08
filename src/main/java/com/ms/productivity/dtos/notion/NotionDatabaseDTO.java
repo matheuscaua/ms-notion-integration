@@ -2,6 +2,7 @@ package com.ms.productivity.dtos.notion;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import java.util.List;
@@ -16,5 +17,4 @@ public class NotionDatabaseDTO {
     @JsonProperty("results")
     private List<NotionItemDTO> items;
 
-    private
 }
