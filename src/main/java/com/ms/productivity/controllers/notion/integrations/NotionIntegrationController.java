@@ -16,7 +16,7 @@ public class NotionIntegrationController {
     private final NotionIntegrationServiceImpl notionIntegrationService;
 
     @PostMapping
-    public ResponseEntity<ResponseHttpUtilsDTO> saveIntegration(@RequestBody NotionIntegrationDTO integrationDTO)
+    public ResponseEntity<ResponseHttpUtilsDTO<NotionIntegrationDTO>> saveIntegration(@RequestBody NotionIntegrationDTO integrationDTO)
             throws URISyntaxException {
         var response = notionIntegrationService.createNotionIntegrationModel(integrationDTO);
         return ResponseEntity.status(response.getCode()).body(response);

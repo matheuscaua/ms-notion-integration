@@ -6,6 +6,7 @@ import com.ms.productivity.models.notion.NotionIntegration;
 import com.ms.productivity.models.notion.NotionParametersIntegration;
 import com.ms.productivity.repositories.NotionIntegrationRepository;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.net.URI;
@@ -19,12 +20,15 @@ public class NotionIntegrationServiceImpl {
 
     private final NotionIntegrationRepository repository;
 
+    private static String message;
+
     public ResponseHttpUtilsDTO<NotionIntegrationDTO> createNotionIntegrationModel(NotionIntegrationDTO notionIntegrationDTO) throws URISyntaxException {
         if(notionIntegrationIsValid(notionIntegrationDTO)){
-            repository.save(createNotionIntegration(notionIntegrationDTO));
-            return responseSuccess(notionIntegrationDTO);
+            var integration = createNotionIntegration(notionIntegrationDTO);
+            repository.save(integration);
+            return createResponse(notionIntegrationDTO, message, HttpStatus.OK);
         }
-        return responseError(notionIntegrationDTO);
+        return createResponse(notionIntegrationDTO, message, HttpStatus.BAD_REQUEST);
     }
     private NotionIntegration createNotionIntegration(NotionIntegrationDTO notionIntegrationDTO) throws URISyntaxException {
         var notionIntegrationModel = new NotionIntegration();
@@ -47,34 +51,45 @@ public class NotionIntegrationServiceImpl {
     }
     private boolean notionIntegrationIsValid(NotionIntegrationDTO notionIntegrationDTO){
         boolean isValid = true;
-        if(!uriNotionIntegrationIsValid(notionIntegrationDTO) || !nameNotionIntegrationIsValid(notionIntegrationDTO))
+        var notionIntegration = repository.findNotionIntegrationByName(notionIntegrationDTO.getName());
+
+        if(!uriNotionIntegrationIsValid(notionIntegrationDTO) ||
+                !nameNotionIntegrationIsValid(notionIntegrationDTO)) isValid = false;
+
+        if(notionIntegration.isPresent()) {
+            message = "ERROR - Integration exists!";
             isValid = false;
-
+        }
         return isValid;
-
     }
 
     private boolean uriNotionIntegrationIsValid(NotionIntegrationDTO notionIntegrationDTO){
-        return notionIntegrationDTO.getUri().startsWith("http") ||
+        var isValid = notionIntegrationDTO.getUri().startsWith("http") ||
                 notionIntegrationDTO.getUri().startsWith("https");
+        if(!isValid){
+            message = "ERROR - Invalid URI";
+        }
+        return isValid;
     }
 
     private boolean nameNotionIntegrationIsValid(NotionIntegrationDTO notionIntegrationDTO){
-        return notionIntegrationDTO.getName().matches("^[a-zA-ZÀ-ÖØ-öø-ÿ]+$"); //Verifica se contém apenas letras e caracteres unicode.
+        var isValid = notionIntegrationDTO.getName().matches("^[a-zA-ZÀ-ÖØ-öø-ÿ]+$");
+        if (!isValid){
+            message = "ERROR - Invalid Name";
+        }
+        return isValid;
     }
 
-    private ResponseHttpUtilsDTO<NotionIntegrationDTO> responseError(NotionIntegrationDTO notionIntegrationDTO){
+    private ResponseHttpUtilsDTO<NotionIntegrationDTO> createResponse(NotionIntegrationDTO notionIntegrationDTO,
+                                                                     String message,
+                                                                     HttpStatus httpStatus){
         var response = new ResponseHttpUtilsDTO<NotionIntegrationDTO>();
-        response.setHttpStatus(HttpStatus.NOT_FOUND);
-        response.setCode(HttpStatus.NOT_FOUND.value());
+        response.setHttpStatus(httpStatus);
+        response.setCode(httpStatus.value());
+        response.setMessage(message);
         response.setData(notionIntegrationDTO);
+        response.setDateTime(LocalDateTime.now());
         return response;
     }
-    private ResponseHttpUtilsDTO<NotionIntegrationDTO> responseSuccess(NotionIntegrationDTO notionIntegrationDTO){
-        var response = new ResponseHttpUtilsDTO<NotionIntegrationDTO>();
-        response.setHttpStatus(HttpStatus.CREATED);
-        response.setCode(HttpStatus.CREATED.value());
-        response.setData(notionIntegrationDTO);
-        return response;
-    }
+
 }
