@@ -3,13 +3,13 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/db-productivity
+    url: jdbc:postgresql://localhost:5432/db-notion-integration
     username: postgres
     password: root
   jpa:
     hibernate:
       ddl-auto: create-drop
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+      dialect: org.hibernate.dialect.PostgresSQLDialect
       jdbc:
         lob.non-contextual-creation: true
     properties:

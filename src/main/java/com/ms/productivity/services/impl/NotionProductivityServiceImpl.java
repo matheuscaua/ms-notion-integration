@@ -12,7 +12,7 @@ import com.ms.productivity.repositories.ProductivityRepository;
 import com.ms.productivity.services.ParameterService;
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

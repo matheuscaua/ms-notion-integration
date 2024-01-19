@@ -20,6 +20,7 @@ public class NotionIntegrationController {
             throws URISyntaxException {
         var response = notionIntegrationService.createNotionIntegrationModel(integrationDTO);
         return ResponseEntity.status(response.getCode()).body(response);
+
     }
 
 }

@@ -13,6 +13,4 @@ public class NotionDatabaseController {
 
     private final NotionDatabaseServiceImpl notionDatabaseService;
 
-
-
 }
