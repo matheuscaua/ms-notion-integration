@@ -6,35 +6,38 @@ import com.ms.productivity.models.notion.NotionIntegration;
 import com.ms.productivity.models.notion.NotionParametersIntegration;
 import com.ms.productivity.repositories.NotionIntegrationRepository;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class NotionIntegrationServiceImpl {
 
     private final NotionIntegrationRepository repository;
-
     private static String message;
 
     public ResponseHttpUtilsDTO<NotionIntegrationDTO> createNotionIntegrationModel(NotionIntegrationDTO notionIntegrationDTO) throws URISyntaxException {
         if(notionIntegrationIsValid(notionIntegrationDTO)){
-            var integration = createNotionIntegration(notionIntegrationDTO);
+            var integration = buildNotionIntegration(notionIntegrationDTO);
             repository.save(integration);
             return createResponse(notionIntegrationDTO, message, HttpStatus.OK);
         }
         return createResponse(notionIntegrationDTO, message, HttpStatus.BAD_REQUEST);
     }
-    private NotionIntegration createNotionIntegration(NotionIntegrationDTO notionIntegrationDTO) throws URISyntaxException {
+
+    public Optional<NotionIntegration> findNotionIntegrationById(UUID notionIntegrationId){
+        return repository.findById(notionIntegrationId);
+    }
+    private NotionIntegration buildNotionIntegration(NotionIntegrationDTO notionIntegrationDTO) throws URISyntaxException {
         var notionIntegrationModel = new NotionIntegration();
         notionIntegrationModel.setName(notionIntegrationDTO.getName());
         notionIntegrationModel.setUri(new URI(notionIntegrationDTO.getUri()));
-        var notionParametersIntegration = createNotionParametersIntegration(notionIntegrationDTO);
+        var notionParametersIntegration = buildNotionParametersIntegration(notionIntegrationDTO);
         notionIntegrationModel.setNotionParametersIntegration(notionParametersIntegration);
         notionIntegrationModel.setLastUpdate(LocalDateTime.now());
         notionIntegrationModel.setSaveDate(LocalDateTime.now());
@@ -42,7 +45,7 @@ public class NotionIntegrationServiceImpl {
         return notionIntegrationModel;
     }
 
-    private NotionParametersIntegration createNotionParametersIntegration(NotionIntegrationDTO notionIntegrationDTO){
+    private NotionParametersIntegration buildNotionParametersIntegration(NotionIntegrationDTO notionIntegrationDTO){
         var notionParametersIntegration = new NotionParametersIntegration();
         var notionParametersIntegrationDTO = notionIntegrationDTO.getNotionParametersIntegration();
         notionParametersIntegration.setNotionVersion(notionParametersIntegrationDTO.getNotionVersion());
