@@ -22,7 +22,6 @@ public class NotionPropertiesItemDTO {
         private Boolean checkbox;
     }
 
-
     @Data
     public static class NameDTO{
         private String id;

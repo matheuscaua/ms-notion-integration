@@ -12,7 +12,8 @@ import java.util.UUID;
 @Repository
 public interface ParameterRepository extends JpaRepository<Parameter, UUID> {
 
-    @Query(value = "SELECT * FROM TBPARAMETER WHERE DESCRIPTION = :description", nativeQuery = true)
+    @Query(value = "SELECT * FROM TBPARAMETER " +
+            "WHERE DESCRIPTION = :description", nativeQuery = true)
     Optional<Parameter> findParameterByDescription(@Param("description") String descripition);
 
 }

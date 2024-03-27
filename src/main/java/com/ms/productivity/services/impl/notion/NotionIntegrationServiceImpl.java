@@ -1,4 +1,4 @@
-package com.ms.productivity.services.impl;
+package com.ms.productivity.services.impl.notion;
 
 import com.ms.productivity.dtos.ResponseHttpUtilsDTO;
 import com.ms.productivity.dtos.integrations.NotionIntegrationDTO;
@@ -6,6 +6,8 @@ import com.ms.productivity.models.notion.NotionIntegration;
 import com.ms.productivity.models.notion.NotionParametersIntegration;
 import com.ms.productivity.repositories.NotionIntegrationRepository;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.net.URI;
@@ -15,17 +17,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class NotionIntegrationServiceImpl {
 
-    private final NotionIntegrationRepository repository;
+    @Autowired
+    private NotionIntegrationRepository repository;
     private static String message;
 
     public ResponseHttpUtilsDTO<NotionIntegrationDTO> createNotionIntegrationModel(NotionIntegrationDTO notionIntegrationDTO) throws URISyntaxException {
         if(notionIntegrationIsValid(notionIntegrationDTO)){
             var integration = buildNotionIntegration(notionIntegrationDTO);
             repository.save(integration);
-            return createResponse(notionIntegrationDTO, message, HttpStatus.OK);
+            return createResponse(notionIntegrationDTO, message, HttpStatus.CREATED);
         }
         return createResponse(notionIntegrationDTO, message, HttpStatus.BAD_REQUEST);
     }
@@ -56,13 +58,14 @@ public class NotionIntegrationServiceImpl {
         boolean isValid = true;
         var notionIntegration = repository.findNotionIntegrationByName(notionIntegrationDTO.getName());
 
-        if(!uriNotionIntegrationIsValid(notionIntegrationDTO) ||
-                !nameNotionIntegrationIsValid(notionIntegrationDTO)) isValid = false;
-
         if(notionIntegration.isPresent()) {
             message = "ERROR - Integration exists!";
             isValid = false;
         }
+
+        if(!uriNotionIntegrationIsValid(notionIntegrationDTO) ||
+                !nameNotionIntegrationIsValid(notionIntegrationDTO)) isValid = false;
+
         return isValid;
     }
 
@@ -76,7 +79,7 @@ public class NotionIntegrationServiceImpl {
     }
 
     private boolean nameNotionIntegrationIsValid(NotionIntegrationDTO notionIntegrationDTO){
-        var isValid = notionIntegrationDTO.getName().matches("^[a-zA-ZÀ-ÖØ-öø-ÿ]+$");
+        var isValid = notionIntegrationDTO.getName().matches("^[a-zA-ZÀ-ÖØ-öø-ÿ\\s]+$");
         if (!isValid){
             message = "ERROR - Invalid Name";
         }

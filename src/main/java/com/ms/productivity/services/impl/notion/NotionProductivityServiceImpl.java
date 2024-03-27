@@ -1,19 +1,19 @@
-package com.ms.productivity.services.impl;
+package com.ms.productivity.services.impl.notion;
 
 import com.ms.productivity.clients.NotionClient;
 import com.ms.productivity.dtos.notion.NotionDatabaseDTO;
 import com.ms.productivity.dtos.notion.NotionItemDTO;
-import com.ms.productivity.dtos.ResponseHttpUtilsDTO;
 import com.ms.productivity.enums.NotionItemPriorityEnum;
 import com.ms.productivity.enums.ParameterDescriptionEnum;
 import com.ms.productivity.models.Parameter;
 import com.ms.productivity.models.productivity.NotionDatabaseProductivity;
 import com.ms.productivity.repositories.ProductivityRepository;
 import com.ms.productivity.services.ParameterService;
+import com.ms.productivity.services.impl.KafkaTemplateService;
+import com.ms.productivity.services.impl.UtilsServiceImpl;
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,37 +32,35 @@ public class NotionProductivityServiceImpl {
 
     private final NotionClient notionClient;
 
+    private final NotionIntegrationServiceImpl notionIntegrationService;
+
     private final ParameterService parameterService;
+
+    private final NotionDatabaseIntegrationServiceImpl notionDatabaseIntegrationService;
 
     private final KafkaTemplateService kafkaTemplateService;
 
-    public ResponseHttpUtilsDTO calculate(){
-        Map<String, Integer> valueProductivity;
-        NotionDatabaseProductivity productivity = new NotionDatabaseProductivity();
+    public void calculate(){
+        var notionDatabaseIntegrationList = notionDatabaseIntegrationService.findAllNotionDatabaseIntegration();
+        notionDatabaseIntegrationList.forEach(notionDatabaseIntegration -> {
+           var notionIntegration = notionIntegrationService.findNotionIntegrationById(
+                   notionDatabaseIntegration.getNotionIntegration().getId());
+           if(notionIntegration.isPresent()) {
+                var parametersNotionDatabase = UtilsServiceImpl.buildParametersNotionDatabaseClient(
+                        notionDatabaseIntegration, notionIntegration.get());
+                NotionDatabaseDTO notionDatabase = notionClient.getNotionDatabaseWithQuery(
+                        parametersNotionDatabase.get("uri"), parametersNotionDatabase);
+                NotionDatabaseProductivity productivity = new NotionDatabaseProductivity();
+                List<NotionItemDTO> allItems = notionDatabase.getItems();
+                List<NotionItemDTO> completedItems = notionItemsCompleted(notionDatabase);
+                Map<String, Integer> valueProductivity = calculateProductivity(completedItems, allItems);
 
-        NotionDatabaseDTO notionDatabase = findNotionDatabase();
-
-        if(notionDatabase != null) {
-            List<NotionItemDTO> allItems = notionDatabase.getItems();
-            List<NotionItemDTO> completedItems = notionItemsCompleted(notionDatabase);
-            valueProductivity = calculateProductivity(completedItems, allItems);
-
-            productivity = createProductivityModel(productivity,
-                    valueProductivity, completedItems.size(), allItems.size());
-            save(productivity);
-           // kafkaTemplateService.
-            return successProductivityResponseDTO();
-        }return errorProductivityResponseDTO();
-    }
-
-    public NotionDatabaseDTO findNotionDatabase(){
-        Parameter urlBaseNotion = findBaseUrlNotion();
-        Parameter headersNotion = findHeaderNotion();
-        Map<String, String> headers = parameterService.extractNotionHeaders(headersNotion);
-        if(!headers.isEmpty()) {
-           return notionClient.getNotionDatabase(urlBaseNotion.getValue(), headers);
-        }
-        return null;
+                productivity = createProductivityModel(productivity,
+                        valueProductivity, completedItems.size(), allItems.size());
+                save(productivity);
+                // kafkaTemplateService
+           }
+        });
     }
 
     public NotionDatabaseProductivity createProductivityModel(NotionDatabaseProductivity productivity,
@@ -80,9 +78,13 @@ public class NotionProductivityServiceImpl {
 
     public List<NotionItemDTO> notionItemsCompleted(NotionDatabaseDTO notionDatabase){
         return notionDatabase.getItems().parallelStream().filter(i ->
-                i.getProperties().getFeito().getCheckbox().equals(true)).collect(Collectors.toList());
+                i.getProperties()
+                        .getFeito()
+                        .getCheckbox()
+                        .equals(true))
+                .collect(Collectors.toList());
     }
-    public Map<String, Integer> calculateProductivity(List<NotionItemDTO> notionItemsCompleted, List<NotionItemDTO> notionItems) {
+   public Map<String, Integer> calculateProductivity(List<NotionItemDTO> notionItemsCompleted, List<NotionItemDTO> notionItems) {
         Map<String, Integer> points = new HashMap<>();
         var priorityItemsCompleted = extractPriorityItems(notionItemsCompleted);
         var priorityTotalItems = extractPriorityItems(notionItems);
@@ -118,20 +120,6 @@ public class NotionProductivityServiceImpl {
         }
         return Arrays.asList(qtdUrgentItems,qtdImportantItems,qtdUnhurriedItems);
     }
-    public ResponseHttpUtilsDTO successProductivityResponseDTO(){
-        var productivityResponse = new ResponseHttpUtilsDTO();
-        productivityResponse.setCode(200);
-        productivityResponse.setHttpStatus(HttpStatus.OK);
-        return productivityResponse;
-    }
-
-    public ResponseHttpUtilsDTO errorProductivityResponseDTO(){
-        var productivityResponse = new ResponseHttpUtilsDTO();
-        productivityResponse.setCode(404);
-        productivityResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
-        return productivityResponse;
-    }
-
     public Parameter findBaseUrlNotion(){
         return parameterService.findParameterByDescription(ParameterDescriptionEnum.URL_BASE_NOTION.toString());
     }

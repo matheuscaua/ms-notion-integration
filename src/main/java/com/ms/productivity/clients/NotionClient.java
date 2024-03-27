@@ -19,15 +19,14 @@ public class NotionClient {
     @Autowired
     private UtilsServiceImpl utilsService;
 
-    public NotionDatabaseDTO getNotionDatabase(String baseUrl, Map<String, String> headers){
-        String url = utilsService.createUrlGetNotionDatabase(baseUrl);
+    public NotionDatabaseDTO getNotionDatabaseWithQuery(String baseUrl, Map<String, String> headers){
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        httpHeaders.setAll(headers);
+        httpHeaders.setBearerAuth(headers.get("token"));
+        httpHeaders.set("Notion-Version", headers.get("notion-version"));
         HttpEntity<NotionDatabaseDTO> httpEntity = new HttpEntity<>(httpHeaders);
-        ParameterizedTypeReference<NotionDatabaseDTO> responseType = new ParameterizedTypeReference<>() {
-        };
-        ResponseEntity<NotionDatabaseDTO> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, responseType);
+        ParameterizedTypeReference<NotionDatabaseDTO> responseType = new ParameterizedTypeReference<>() {};
+        ResponseEntity<NotionDatabaseDTO> response = restTemplate.exchange(baseUrl, HttpMethod.POST, httpEntity, responseType);
 
         return response.getBody();
     }

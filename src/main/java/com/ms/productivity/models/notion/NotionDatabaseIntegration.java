@@ -15,7 +15,7 @@ public class NotionDatabaseIntegration implements Serializable {
 
     private String name;
 
-    @Column(name = "code")
+    @Column
     private String idNotionDatabase;
 
     @ManyToOne

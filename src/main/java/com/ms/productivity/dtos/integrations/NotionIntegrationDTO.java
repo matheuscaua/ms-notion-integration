@@ -7,19 +7,23 @@ import com.ms.productivity.models.notion.NotionParametersIntegration;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NotionIntegrationDTO implements Serializable {
 
     public interface NotionIntegrationView{
-        public static interface NotionIntegrationSave{}
+        interface NotionIntegrationSave{}
     }
-
-
+    
     @NotBlank(groups = NotionIntegrationView.NotionIntegrationSave.class)
     @Size(min = 3, max = 50, groups = NotionIntegrationView.NotionIntegrationSave.class)
     @JsonView(NotionIntegrationView.NotionIntegrationSave.class)
